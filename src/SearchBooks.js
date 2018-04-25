@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import escapeRegExp from 'escape-string-regexp'
 import sortBy from 'sort-by'
+import { Link } from 'react-router-dom'
 
 class SearchBoosk extends Component {
 	state= {
@@ -31,7 +32,7 @@ class SearchBoosk extends Component {
 		return (
 			<div className="search-books">
 			  <div className="search-books-bar">
-			  	<a className="close-search" >Close</a>			    
+			  	<Link className="close-search" to='/'>Close</Link>			    
 			    <div className="search-books-input-wrapper">
 			      <input type="text" placeholder="Search by title or author" value={this.state.query} onChange={(event) => this.updateQuery(event.target.value)}/>
 			    </div>
