@@ -15,6 +15,10 @@ class BooksApp extends Component {
   }
 
   componentDidMount() {
+    this.getBooks()
+  }
+
+  getBooks() {
     BooksAPI.getAll().then((books) => {
       this.setState({ books })
     })
@@ -35,6 +39,14 @@ class BooksApp extends Component {
     })
   }
 
+  moveBook(book, newShelf) {
+    if (newShelf !== book.shelf) {
+        BooksAPI.update(book, newShelf).then(() => {
+          this.getBooks();
+        });
+    }
+  }
+
   render() {
     return (
       <div className="app">
@@ -47,15 +59,27 @@ class BooksApp extends Component {
               <div>
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Currently Reading</h2>
-                  <ListBooks listBooks={this.state.currentlyReadingBooks} />
+                  <ListBooks 
+                    listBooks={this.state.currentlyReadingBooks} 
+                    onMoveBook={(book, newShelf) => {
+                      this.moveBook(book, newShelf);
+                    }}/>
                 </div>
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Want to Read</h2>     
-                  <ListBooks listBooks={this.state.wantToReadBooks} />
+                  <ListBooks 
+                    listBooks={this.state.wantToReadBooks} 
+                    onMoveBook={(book, newShelf) => {
+                      this.moveBook(book, newShelf);
+                    }}/>
                 </div>
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Read</h2>
-                  <ListBooks listBooks={this.state.readBooks} />
+                  <ListBooks 
+                    listBooks={this.state.readBooks} 
+                    onMoveBook={(book, newShelf) => {
+                      this.moveBook(book, newShelf);
+                    }}/>
                 </div>
               </div>
             </div>
@@ -65,7 +89,11 @@ class BooksApp extends Component {
           </div>
         )}/>
         <Route path='/search' render={() => (
-          <SearchBooks listBooks={this.state.books}/>
+          <SearchBooks 
+            listBooks={this.state.books}
+            onMoveBook={(book, newShelf) => {
+              this.moveBook(book, newShelf);
+            }}/>
         )}/>
       </div>
     )
