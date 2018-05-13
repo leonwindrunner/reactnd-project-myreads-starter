@@ -2,32 +2,25 @@ import React, { Component } from 'react'
 import escapeRegExp from 'escape-string-regexp'
 import sortBy from 'sort-by'
 import { Link } from 'react-router-dom'
+import * as BooksAPI from './BooksAPI'
 
 class SearchBoosk extends Component {
 	state= {
-		query: ''
+		query: '',
+		books: [],
 	}
 
 	updateQuery = (query) => {
-    this.setState({ query: query.trim() })
-  }
+		this.setState({ query: query.trim() })
+    BooksAPI.search(query).then((books) => {
+      this.setState({ books })
 
-  clearQuery = () => {
-    this.setState({ query: '' })
-  }
+    }).catch(() => {
 
+    })
+  }
 
 	render() {
-		let showingBooks
-
-    if (this.state.query) {
-      const match = new RegExp(escapeRegExp(this.state.query), 'i')
-      showingBooks = this.props.listBooks.filter((book) => match.test(book.title))
-    } else {
-      showingBooks = this.props.listBooks
-    }
-
-    showingBooks.sort(sortBy('title'))
 
 		return (
 			<div className="search-books">
@@ -38,37 +31,39 @@ class SearchBoosk extends Component {
 			    </div>
 			  </div>
 
-			  {showingBooks.length !== this.props.listBooks.length && (
-          <div className='showing-books'>
-            <span>Now showing {showingBooks.length} of {this.props.listBooks.length} total</span>
-            <button onClick={this.clearQuery}>Show all</button>
-          </div>
-        )}
-
-			  <div className="search-books-results">
-			    <ol className="books-grid">
-	        	{showingBooks.map(( book ) => (
-	        		<li key={book.id}>
-		            <div className="book">
-		              <div className="book-top">
-		                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
-		                <div className="book-shelf-changer">
-		                  <select defaultValue={book.shelf} onChange={(event) => this.props.onMoveBook(book, event.target.value)}>
-		                    <option value="none" disabled>Move to...</option>
-		                    <option value="currentlyReading" >Currently Reading</option>
-		                    <option value="wantToRead">Want to Read</option>
-		                    <option value="read">Read</option>
-		                    <option value="none">None</option>
-		                  </select>
-		                </div>
-		              </div>
-		              <div className="book-title">{book.title}</div>
-		              <div className="book-authors">{book.authors}</div>
-		            </div>
-		          </li>
-	        	))}
-	        </ol>
-			  </div>
+				{
+					(this.state.books && this.state.books.length>0)  ? (
+				    <div className="search-books-results">
+					    <ol className="books-grid">
+			        	{this.state.books.map(( book ) => (
+			        		<li key={book.id}>
+				            <div className="book">
+				              <div className="book-top">
+				                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
+				                <div className="book-shelf-changer">
+				                  <select defaultValue={book.shelf} onChange={(event) => this.props.onMoveBook(book, event.target.value)}>
+				                    <option value="none" disabled>Move to...</option>
+				                    <option value="currentlyReading" >Currently Reading</option>
+				                    <option value="wantToRead">Want to Read</option>
+				                    <option value="read">Read</option>
+				                    <option value="none">None</option>
+				                  </select>
+				                </div>
+				              </div>
+				              <div className="book-title">{book.title}</div>
+				              <div className="book-authors">{book.authors}</div>
+				            </div>
+				          </li>
+			        	))}
+			        </ol>
+					  </div>
+				  ) : (
+			      <div className="no-result">	
+			      	No Results
+			      </div>
+				  )
+				}
+				
 			</div>
 		)
 	}
