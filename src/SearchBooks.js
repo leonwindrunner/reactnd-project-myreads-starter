@@ -6,18 +6,12 @@ import * as BooksAPI from './BooksAPI'
 
 class SearchBoosk extends Component {
 	state= {
-		query: '',
 		books: [],
-	}
+	}	
 
-	updateQuery = (query) => {
-		this.setState({ query: query.trim() })
+  updateQuery = (query) => {
     BooksAPI.search(query).then((books) => {
-    	console.log(books);
       this.setState({ books })
-
-    }).catch(() => {
-
     })
   }
 
@@ -31,6 +25,18 @@ class SearchBoosk extends Component {
   	return shelf;
   } 
 
+  backgroundImg = (book) => {
+  	var bgImg = "";
+
+    if (book.hasOwnProperty("imageLinks")) {
+        bgImg = `url(${book.imageLinks.thumbnail})`;
+    } else {
+        bgImg = "#eee";
+    }
+
+    return bgImg;
+  } 
+
 	render() {
 
 		return (
@@ -38,7 +44,7 @@ class SearchBoosk extends Component {
 			  <div className="search-books-bar">
 			  	<Link className="close-search" to='/'>Close</Link>			    
 			    <div className="search-books-input-wrapper">
-			      <input type="text" placeholder="Search by title or author" value={this.state.query} onChange={(event) => this.updateQuery(event.target.value)}/>
+			      <input type="text" placeholder="Search by title or author" onChange={(event) => this.updateQuery(event.target.value)}/>
 			    </div>
 			  </div>
 
@@ -47,14 +53,12 @@ class SearchBoosk extends Component {
 				    <div className="search-books-results">
 					    <ol className="books-grid">
 			        	{this.state.books.map(( book ) => (
-
 			        		<li key={book.id}>
 				            <div className="book">
 				              <div className="book-top">
-				                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
-				                <div className="book-shelf-changer">
-					                
-				                  <select defaultValue={this.bookShelf(book)} onChange={(event) => this.props.onMoveBook(book, event.target.value)}>
+				                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: this.backgroundImg(book) }}></div>
+				                <div className="book-shelf-changer">					              
+				                  <select value={this.bookShelf(book)} defaultValue="none" onChange={(event) => this.props.onMoveBook(book, event.target.value)}>
 				                    <option value="" disabled>Move to...</option>
 				                    <option value="currentlyReading" >Currently Reading</option>
 				                    <option value="wantToRead">Want to Read</option>
@@ -65,9 +69,6 @@ class SearchBoosk extends Component {
 				              </div>
 				              <div className="book-title">{book.title}</div>
 				              <div className="book-authors">{book.authors}</div>
-
-				              
-
 				            </div>
 				          </li>
 			        	))}
