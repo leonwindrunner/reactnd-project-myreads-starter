@@ -21,23 +21,15 @@ class BooksApp extends Component {
 
   getBooks() {
     BooksAPI.getAll().then((books) => {
-      console.log(books);
-      this.setState({ books })
-    })
-
-    BooksAPI.getAll().then((books) => {
-      let currentlyReadingBooks = books.filter( book => book.shelf === "currentlyReading")
-      this.setState({ currentlyReadingBooks })
-    })
-
-    BooksAPI.getAll().then((books) => {
-      let wantToReadBooks = books.filter( book => book.shelf === "wantToRead")
-      this.setState({ wantToReadBooks })
-    })
-
-    BooksAPI.getAll().then((books) => {
-      let readBooks = books.filter( book => book.shelf === "read")
-      this.setState({ readBooks })
+      const currentlyReadingBooks = books.filter(book => book.shelf === 'currentlyReading')
+      const wantToReadBooks = books.filter(book=> book.shelf === 'wantToRead')
+      const readBooks = books.filter(book=> book.shelf === 'read')
+      this.setState({
+        books: books,
+        currentlyReadingBooks: currentlyReadingBooks,
+        wantToReadBooks: wantToReadBooks,
+        readBooks: readBooks
+      })
     })
   }
 
